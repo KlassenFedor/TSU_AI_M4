@@ -4,6 +4,7 @@ import string
 import pymorphy2
 import nltk
 import tqdm
+import fire
 
 
 class LuhnSummarizer:
@@ -133,3 +134,7 @@ class LuhnSummarizer:
                         insignificant_words += 1
 
         return max(parts_score)
+
+
+if __name__ == '__main__':
+    fire.Fire(LuhnSummarizer)
