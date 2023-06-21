@@ -7,7 +7,7 @@
 ## How to use
 
 ## Demo
-![screen-gif](./demo.gif)
+![screen-gif](./gif.gif)
 
 ## Sources
 https://courses.ischool.berkeley.edu/i256/f06/papers/luhn58.pdf
