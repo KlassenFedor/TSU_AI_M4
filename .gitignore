@@ -1,2 +1,5 @@
 test/
 .idea/
+/data/
+/bot/data/
+/credentials/
