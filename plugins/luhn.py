@@ -13,6 +13,11 @@ class LuhnSummarizer:
         self.lemmatizer = nltk.stem.WordNetLemmatizer()
 
     def process_text(self, data):
+        """
+        Makes a brief description of the provided text using the Luhn method.
+        :param data: string that represent full text
+        :return: string, text summary
+        """
         language = self.__find_text_language(data)
         result = self.__get_dict_from_text(data)
         sentences = self.__split_to_sentences(data, language)
@@ -28,6 +33,12 @@ class LuhnSummarizer:
         return summary
 
     def __split_to_words(self, text, mode='ru'):
+        """
+        Splits text to words
+        :param text: full text
+        :param mode: what language should work with
+        :return: text divided to words and modified with lower() function
+        """
         allowed_symbols = string.ascii_letters + '-'
         for letter in text:
             if mode == 'ru':
@@ -38,6 +49,12 @@ class LuhnSummarizer:
         return text.lower().split()
 
     def __split_to_sentences(self, text, mode='ru'):
+        """
+        Splits text to sentences
+        :param text: full text
+        :param mode: what language should work with
+        :return: text divided to sentences and modified with lower() function
+        """
         allowed_symbols = string.ascii_letters + '-' + '.'
         for sign in ';!?\n':
             text.replace(sign, '.')
@@ -50,6 +67,11 @@ class LuhnSummarizer:
         return text.lower().split('.')
 
     def __find_text_language(self, text):
+        """
+        Identifies the language of the text
+        :param text: full text
+        :return: 'ru' or 'en'
+        """
         en = 0
         ru = 0
         for letter in text:
@@ -60,6 +82,11 @@ class LuhnSummarizer:
         return 'ru' if ru > en else 'en'
 
     def __normalize_word(self, word):
+        """
+        Performs text normalization
+        :param word: one word
+        :return: normalized form of the word
+        """
         language = self.__find_text_language(word)
         if language == 'ru':
             morph = pymorphy2.MorphAnalyzer()
@@ -70,6 +97,11 @@ class LuhnSummarizer:
         return word
 
     def __normalize_word_fast(self, word):
+        """
+        Faster version of normalize_word function
+        :param word: -||-
+        :return: -||-
+        """
         mode = self.__find_text_language(word)
         if mode == 'ru':
             word = self.morph.parse(word)[0].normal_form
@@ -78,6 +110,11 @@ class LuhnSummarizer:
         return word
 
     def __get_dict_from_text(self, text):
+        """
+        Creates a dictionary of word occurrence frequencies
+        :param text: full text
+        :return: dict - word:number of appearances
+        """
         language = self.__find_text_language(text)
         words = self.__split_to_words(text, language)
         words_dict = dict()
@@ -103,6 +140,13 @@ class LuhnSummarizer:
         return words_dict
 
     def __find_sentence_score(self, sentence, result, mode='ru'):
+        """
+        Calculates the rating of the offer
+        :param sentence: some words
+        :param result: prepared text
+        :param mode: 'en' or 'ru'
+        :return: Luhn sentence score
+        """
         sentence = self.__split_to_words(sentence, mode)
         sentence_bin = []
         for i in range(len(sentence)):

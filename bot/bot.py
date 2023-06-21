@@ -19,17 +19,28 @@ async def cmd_start(message: types.Message):
 
 @dp.message_handler(content_types=['document'])
 async def luhn_summarization(message: types.Message):
-    file_id = message.document.file_id
-    file = await bot.get_file(file_id)
-    file_path = file.file_path
-    username = message.from_user.id
-    destination = str(datetime.datetime.now()) + '_' + str(username) + '.txt'
-    destination = destination.replace('-', '_').replace(' ', '_').replace(':', '_')
-    await bot.download_file(file_path, './data/requests/' + destination)
-    summarizer = LuhnSummarizer()
-    with open('./data/requests/' + destination, 'r', encoding='utf-8') as f:
-        text = f.read()
+    # processing the user's document
+    try:
+        file_id = message.document.file_id
+        file = await bot.get_file(file_id)
+        file_path = file.file_path
+        username = message.from_user.id
+    except Exception:
+        logging.error('Unable to get metadata from user message. ' + str(datetime.datetime.now()))
+        return
+    try:
+        destination = str(datetime.datetime.now()) + '_' + str(username) + '.txt'
+        destination = destination.replace('-', '_').replace(' ', '_').replace(':', '_')
+        await bot.download_file(file_path, './data/requests/' + destination)
+        summarizer = LuhnSummarizer()
+        with open('./data/requests/' + destination, 'r', encoding='utf-8') as f:
+            text = f.read()
+    except Exception:
+        logging.error('Unable to download user document. ' + str(datetime.datetime.now()))
+        return
+    # performing summarization
     summary = summarizer.process_text(text)
+    # returning the result to the user
     with open('./data/answers/' + destination[:-4] + '_answer_' + '.txt', 'w') as f:
         f.write(summary)
     await message.answer_document(
